@@ -31,7 +31,7 @@ jobs:
         run: ./gradlew bootJar
 
       - name: generate Docker Image
-        run: docker build -t hoonzzang/devops_step2:v1.0
+        run: docker build -t hoonzzang/devops_step2:v1.0 .
 
       # - name: docker login
       #   run: docker login -u hoonzzang -p${{ secrets.DOCKER_PASSWORD }}
