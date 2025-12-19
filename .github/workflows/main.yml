@@ -60,15 +60,25 @@ jobs:
       - name: docker image pull
         run: docker pull hoonzzang/devops_step2:v1.0
 
-      - name: 경로 변경
-        run: |
-          cd /home/kosa/kosa-devops-step2
-          docker compose -f docker-compose_nginx.yml up
+      # - name: 경로 변경
+      #   run: |
+      #     cd /home/kosa/kosa-devops-step2
+      #     docker compose -f -d docker-compose_nginx.yml up
 
       # 아래와 같이 진행하면 아래 파일을 찾으려고 함
       # /home/kosa/kosa-devops-step2-actions-runner/_work/kosa-devops-step2/kosa-devops-step2/docker-compose_nginx.yml
       # - name: docker compose 실행
       #   run: docker compose -f docker-compose_nginx.yml up
+
+      - uses: actions/checkout@v3
+        with:
+          sparse-checkout: |
+            docker-compose_nginx.yml
+          sparse-checkout-cone-mode: false
+          clean: true
+
+      - name: docker compose 실행
+        run: docker compose -f -d docker-compose_nginx.yml up
 
 
 
