@@ -78,7 +78,7 @@ jobs:
           clean: true
 
       - name: docker compose 실행
-        run: docker compose -f -d docker-compose_nginx.yml up
+        run: docker compose -f docker-compose_nginx.yml up -d
 
 
 
