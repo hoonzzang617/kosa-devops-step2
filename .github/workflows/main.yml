@@ -40,7 +40,7 @@ jobs:
           ./gradlew bootJar
 
       - name: generate Docker Image
-        run: docker build -t hoonzzang/devops_step2:latest ./kosa-devops-step2
+        run: docker build -t hoonzzang/devops_step2:latest ./kosa-devops-step2/
 
       # - name: docker login
       #   run: docker login -u hoonzzang -p${{ secrets.DOCKER_PASSWORD }}
@@ -68,32 +68,45 @@ jobs:
     name: Deploy
     runs-on: self-hosted
     steps:
-      - name: docker login
-        uses: docker/login-action@v1
-        with:
-          username: hoonzzang
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: docker image pull
-        run: docker pull hoonzzang/devops_step2:latest
-
-      # - name: 경로 변경
-      #   run: |
-      #     cd /home/kosa/kosa-devops-step2
-      #     docker compose -f -d docker-compose_nginx.yml up
-
-      # 아래와 같이 진행하면 아래 파일을 찾으려고 함
-      # /home/kosa/kosa-devops-step2-actions-runner/_work/kosa-devops-step2/kosa-devops-step2/docker-compose_nginx.yml
-      # - name: docker compose 실행
-      #   run: docker compose -f docker-compose_nginx.yml up
-
-      # - uses: actions/checkout@v3
+      # - name: docker login
+      #   uses: docker/login-action@v1
       #   with:
-      #     sparse-checkout: |
-      #       docker-compose_nginx.yml
-      #       nginx/nginx.conf
-      #     sparse-checkout-cone-mode: false
-      #     clean: true
+      #     username: hoonzzang
+      #     password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # - name: docker image pull
+      #   run: docker pull hoonzzang/devops_step2:latest
+
+      # # - name: 경로 변경
+      # #   run: |
+      # #     cd /home/kosa/kosa-devops-step2
+      # #     docker compose -f -d docker-compose_nginx.yml up
+
+      # # 아래와 같이 진행하면 아래 파일을 찾으려고 함
+      # # /home/kosa/kosa-devops-step2-actions-runner/_work/kosa-devops-step2/kosa-devops-step2/docker-compose_nginx.yml
+      # # - name: docker compose 실행
+      # #   run: docker compose -f docker-compose_nginx.yml up
+
+      # # - uses: actions/checkout@v3
+      # #   with:
+      # #     sparse-checkout: |
+      # #       docker-compose_nginx.yml
+      # #       nginx/nginx.conf
+      # #     sparse-checkout-cone-mode: false
+      # #     clean: true
+
+      # - name: 파일 다운로드 w/ Artifact
+      #   uses: actions/download-artifact@v4
+      #   with: 
+      #     name: sxp-artifact
+      #     # path: ./docker-compose_nginx.yml
+
+      # 아래는 ec2에서 ssh로 실행하기
+      - name: ec2에서 도커 로그인
+        run: ssh aws-master docker login -u hoonzzang -p ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: ec2에서 도커 이미지 pull
+        run: ssh aws-master docker pull hoonzzang/devops_step2:latest
 
       - name: 파일 다운로드 w/ Artifact
         uses: actions/download-artifact@v4
@@ -101,8 +114,13 @@ jobs:
           name: sxp-artifact
           # path: ./docker-compose_nginx.yml
 
-      - name: docker compose 실행
-        run: docker compose -f docker-compose_nginx.yml up -d
+      - name: ec2로 파일 복사
+        run: |
+          scp docker-compose_nginx.yml aws-master:~/
+          scp -r nginx/nginx.conf aws-master:~/
+
+      - name: ec2에서 docker compose 실행
+        run: ssh aws-master docker compose -f docker-compose_nginx.yml up -d
 
 
 
