@@ -7,31 +7,36 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    # runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
-      # - name: Source Copy
-      #   run: git clone https://github.com/hoonzzang617/kosa-devops-step2
 
-      - uses: actions/checkout@v3
+      - name: 폴더 정리
+        run : sudo rm -rf kosa-devops-step2
 
-      - name: Setup JDK17 
-        uses: actions/setup-java@v3
-        with: 
-          java-version: '17'
-          distribution: 'temurin'
+      - name: Source Copy
+        run: git clone https://github.com/hoonzzang617/kosa-devops-step2
+
+      # - uses: actions/checkout@v3
+
+      # - name: Setup JDK17 
+      #   uses: actions/setup-java@v3
+      #   with: 
+      #     java-version: '17'
+      #     distribution: 'temurin'
           
       - name: gradlew chmod +x
-        run: chmod +x gradlew 
+        run: chmod +x ./kosa-devops-step2/gradlew 
         
       - name: Test with gradle
-        run: ./gradlew --info test
+        run: ./kosa-devops-step2/gradlew --info test
 
       - name: Spring Boot 
-        run: ./gradlew bootJar
+        run: ./kosa-devops-step2/gradlew bootJar
 
       - name: generate Docker Image
-        run: docker build -t hoonzzang/devops_step2:v1.0 .
+        run: docker build -t hoonzzang/devops_step2:latest ./kosa-devops-step2
 
       # - name: docker login
       #   run: docker login -u hoonzzang -p${{ secrets.DOCKER_PASSWORD }}
@@ -43,15 +48,15 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: docker push 2 hub
-        run: docker push hoonzzang/devops_step2:v1.0
+        run: docker push hoonzzang/devops_step2:latest
 
       - name: 파일 업로드
         uses: actions/upload-artifact@v4
         with:
           name: sxp-artifact
           path: |
-            docker-compose_nginx.yml
-            nginx/nginx.conf
+            kosa-devops-step2/docker-compose_nginx.yml
+            kosa-devops-step2/nginx/nginx.conf
 
 
   deploy:
@@ -66,7 +71,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: docker image pull
-        run: docker pull hoonzzang/devops_step2:v1.0
+        run: docker pull hoonzzang/devops_step2:latest
 
       # - name: 경로 변경
       #   run: |
