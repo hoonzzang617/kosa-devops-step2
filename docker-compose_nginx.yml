@@ -16,12 +16,12 @@ services:
       - my_bridge_network
 
   app1:
-    image: hoonzzang/devops_step2:v1.0
+    image: hoonzzang/devops_step2:latest
     networks:
       - my_bridge_network
 
   app2:
-    image: hoonzzang/devops_step2:v1.0
+    image: hoonzzang/devops_step2:latest
     networks:
       - my_bridge_network
 
