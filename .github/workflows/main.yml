@@ -117,7 +117,7 @@ jobs:
       - name: ec2로 파일 복사
         run: |
           scp docker-compose_nginx.yml aws-master:~/
-          scp -r nginx/nginx.conf aws-master:~/
+          scp -r nginx aws-master:~/
 
       - name: ec2에서 docker compose 실행
         run: ssh aws-master docker compose -f docker-compose_nginx.yml up -d
