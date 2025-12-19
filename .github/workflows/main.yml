@@ -30,10 +30,14 @@ jobs:
         run: chmod +x ./kosa-devops-step2/gradlew 
         
       - name: Test with gradle
-        run: ./kosa-devops-step2/gradlew --info test
+        run: |
+          cd ./kosa-devops-step2
+          ./gradlew --info test
 
       - name: Spring Boot 
-        run: ./kosa-devops-step2/gradlew bootJar
+        run: |
+          cd ./kosa-devops-step2
+          ./gradlew bootJar
 
       - name: generate Docker Image
         run: docker build -t hoonzzang/devops_step2:latest ./kosa-devops-step2
